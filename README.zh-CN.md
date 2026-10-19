@@ -255,7 +255,10 @@ native\windows\bin\cu-helper.exe --selftest
 公开可见的工具语义（工具名、参数含义、索引与截图的工作方式），以便让模型在相同的交互范式下工作。
 原生层基于 Microsoft 公开的 UI Automation / SendInput / DWM API 编写。
 
-实现细节与差异记录在 [`docs/`](docs/) 中。
+## 文档
+
+- [架构与设计决策](docs/architecture.md) —— 关键取舍与"为什么这么写"
+- [逆向分析报告](docs/reverse-engineering.md) —— Codex computer use 的三层架构、工具 API 面、原生 helper 协议，以及本项目的差异对照
 
 ## License
 

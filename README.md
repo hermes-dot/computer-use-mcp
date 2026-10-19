@@ -260,7 +260,10 @@ semantics (tool names, parameter meanings, how indexes and screenshots behave) s
 work in the same interaction pattern. The native layer is written against Microsoft's public
 UI Automation / SendInput / DWM APIs.
 
-Design notes and differences are documented in [`docs/`](docs/).
+## Documentation
+
+- [Architecture and design decisions](docs/architecture.md) — the trade-offs and why they were made
+- [Reverse-engineering report](docs/reverse-engineering.md) — Codex computer use internals, its tool surface and native protocol, and how this project differs
 
 ## License
 
