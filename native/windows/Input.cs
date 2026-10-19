@@ -214,6 +214,19 @@ namespace CuHelper
             }
         }
 
+        /// <summary>
+        /// 发送一次 ALT 击键（按下后立即抬起，不改变任何应用状态）。
+        /// 用途：SetForegroundWindow 受"前台锁定"限制，而系统一旦检测到用户输入就会解除该限制；
+        /// 模拟一次修饰键击键是让目标窗口可靠置前的标准做法。
+        /// </summary>
+        public static void TapAltKey()
+        {
+            var batch = new Batch();
+            batch.Key(VK_MENU, false);
+            batch.Key(VK_MENU, true);
+            batch.Flush();
+        }
+
         /// <summary>移动指针到屏幕物理坐标。</summary>
         public static void MoveTo(int x, int y, KeyChord held = null)
         {

@@ -160,7 +160,9 @@ $fixture = $null
 $client = $null
 try {
     Write-Section "启动靶程序"
-    $fixture = Start-Process $fixtureExe -PassThru
+    # 用 CreateProcess 直接启动，而不是 Start-Process：
+    # 后者走 ShellExecute，在部分受限/沙箱环境下会被拒绝或挂起。
+    $fixture = [System.Diagnostics.Process]::Start([System.Diagnostics.ProcessStartInfo]::new($fixtureExe))
     $targetHwnd = 0
     $client = [HelperClient]::new($helperExe)
 

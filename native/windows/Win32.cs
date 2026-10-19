@@ -204,19 +204,52 @@ namespace CuHelper
 
         /// <summary>把窗口带到前台并交出键盘焦点。</summary>
         /// <remarks>
-        /// SetForegroundWindow 受前台锁定限制：非前台进程直接调用往往只闪动任务栏。
-        /// 这里用 AttachThreadInput 把本线程挂到当前前台线程和目标线程的输入队列上，
-        /// 从而绕过限制；结束后必须成对 detach，否则会污染输入队列。
+        /// SetForegroundWindow 受"前台锁定"限制：当前台窗口属于用户正在交互的进程时，
+        /// 其他进程直接调用往往只闪动任务栏。这里按可靠性递增尝试三种手段：
+        ///   1) AttachThreadInput 把本线程挂到前台线程与目标线程的输入队列上；
+        ///   2) 先模拟一次 ALT 击键 —— 系统检测到用户输入后会解除前台锁定；
+        ///   3) 临时置顶再取消置顶，强制窗口浮到最前。
+        /// 每次尝试后都轮询确认，避免"看起来调用了但没生效"的静默失败。
         /// </remarks>
         public static bool ActivateWindow(IntPtr hwnd)
         {
             if (!NativeMethods.IsWindow(hwnd)) return false;
+            if (NativeMethods.GetForegroundWindow() == hwnd) return true;
 
             if (NativeMethods.IsIconic(hwnd))
             {
                 NativeMethods.ShowWindow(hwnd, NativeMethods.SW_RESTORE);
+                System.Threading.Thread.Sleep(60);
             }
 
+            // 手段 1：AttachThreadInput
+            AttachAndActivate(hwnd);
+            if (WaitForForeground(hwnd, 8)) return true;
+
+            // 手段 2：模拟 ALT 击键解除前台锁定后重试
+            try
+            {
+                Input.TapAltKey();
+            }
+            catch (HelperException)
+            {
+                // 输入被阻塞（例如前台是提权窗口）时继续尝试下一种手段
+            }
+            System.Threading.Thread.Sleep(40);
+            AttachAndActivate(hwnd);
+            if (WaitForForeground(hwnd, 10)) return true;
+
+            // 手段 3：临时置顶
+            const int HWND_TOPMOST = -1, HWND_NOTOPMOST = -2;
+            uint flags = NativeMethods.SWP_NOMOVE | NativeMethods.SWP_NOSIZE | NativeMethods.SWP_SHOWWINDOW;
+            NativeMethods.SetWindowPos(hwnd, new IntPtr(HWND_TOPMOST), 0, 0, 0, 0, flags);
+            NativeMethods.SetWindowPos(hwnd, new IntPtr(HWND_NOTOPMOST), 0, 0, 0, 0, flags);
+            AttachAndActivate(hwnd);
+            return WaitForForeground(hwnd, 10);
+        }
+
+        private static void AttachAndActivate(IntPtr hwnd)
+        {
             IntPtr foreground = NativeMethods.GetForegroundWindow();
             uint targetThread = NativeMethods.GetWindowThreadProcessId(hwnd, out _);
             uint foregroundThread = foreground == IntPtr.Zero
@@ -239,15 +272,19 @@ namespace CuHelper
             }
             finally
             {
+                // 必须成对 detach，否则会污染相关线程的输入队列。
                 if (attachedForeground) NativeMethods.AttachThreadInput(currentThread, foregroundThread, false);
                 if (attachedTarget) NativeMethods.AttachThreadInput(currentThread, targetThread, false);
             }
+        }
 
-            // 前台切换是异步的，给系统一点时间落定。
-            for (int i = 0; i < 20; i++)
+        /// <summary>前台切换是异步的，轮询等待它落定。</summary>
+        private static bool WaitForForeground(IntPtr hwnd, int attempts)
+        {
+            for (int i = 0; i < attempts; i++)
             {
                 if (NativeMethods.GetForegroundWindow() == hwnd) return true;
-                System.Threading.Thread.Sleep(25);
+                System.Threading.Thread.Sleep(30);
             }
             return NativeMethods.GetForegroundWindow() == hwnd;
         }
