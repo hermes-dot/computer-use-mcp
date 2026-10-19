@@ -1,0 +1,45 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  build-and-test:
+    # 需要 Windows：原生 helper 依赖 .NET Framework 的 UIAutomationClient
+    runs-on: windows-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Type check
+        run: npm run typecheck
+
+      - name: Build MCP server
+        run: npm run build
+
+      - name: Build native helper
+        run: npm run build:native
+
+      - name: Native helper self-test
+        run: native\windows\bin\cu-helper.exe --selftest
+
+      - name: MCP protocol tests
+        run: npm run test:mcp
+
+      - name: Native connectivity check
+        run: node dist/index.js --check
+
+      # 端到端 GUI 测试（tests/e2e.ps1 与 tests/mcp-live.mjs）会启动测试靶程序、
+      # 抢占前台焦点并真实点击。托管 runner 的桌面会话不保证稳定，
+      # 因此只在本地/交互式环境运行：npm run test:e2e && npm run test:live

@@ -155,3 +155,40 @@ WGC（Windows.Graphics.Capture）能在窗口被遮挡时仍然截到内容，�
 靶程序 `tests/fixture/TestTarget.cs` 刻意使用固定控件布局，并让 `statusLabel` **不设置**
 `AccessibleName` —— 这样 UIA 的 `Name` 就是可见文本本身，测试才能通过无障碍树观察到
 "点击真的改变了界面状态"，而不是只验证"调用返回了成功"。
+
+## 11. 跨平台扩展
+
+MCP 层与平台无关，它只依赖一条约定：**`native/<平台>/bin/` 下有一个可执行文件，
+能用 NDJSON 讲同一套方法**（见第 8 节的协议）。因此新增平台**不需要改动 `src/` 下
+任何工具定义或参数映射**。
+
+```
+native/
+├── windows/   已实现   C# / .NET Framework 4.8（UI Automation + SendInput + PrintWindow/GDI）
+├── macos/     待实现   AXUIElement + CGEvent + ScreenCaptureKit
+└── linux/     待实现   AT-SPI + XTest/uinput + 合成器相关抓屏
+```
+
+后端需要实现的方法集（与 `native/windows/Program.cs` 的分发表一致）：
+
+| 类别 | 方法 |
+|---|---|
+| 查询 | `ping` `list_windows` `list_apps` `get_window` `get_window_state` `element_bounds` `get_screenshot` |
+| 生命周期 | `activate_window` `launch_app` |
+| 输入 | `click` `move` `type_text` `press_key` `scroll` `set_value` `drag` `perform_secondary_action` |
+
+对平台后端的要求（这些是正确性的前提，不是优化项）：
+
+1. **坐标系必须与无障碍 API 一致**：Windows 上体现为 DPI 感知；macOS 上是 backing scale
+   factor；Linux 上是 X11 逻辑坐标与合成器缩放的关系。三者不一致会让"元素矩形"与
+   "截图像素"错位，而这类错误不会报错，只会点偏。
+2. **元素索引只在最近一次 `get_window_state` 内有效**，越界必须返回 `stale_element_index`。
+3. **输入前校验前台归属与落点遮挡**，宁可失败也不要静默点错窗口。
+4. **截图必须回传 `scale`**，让上层把模型读到的图像坐标换算回物理坐标。
+
+`helper-locator.ts` 里的 `BACKENDS` 表声明了各平台的目标路径与实现状态；
+平台未支持或产物缺失时，`--check` 与工具调用都会给出可操作的错误信息。
+
+顺带一提：Codex 在 Linux 上走的是 AT-SPI 的 **full-desktop** 目标（桌面级坐标），
+在 macOS/Windows 上走 **window2**（窗口级坐标 + 元素索引）。若要严格对齐，
+Linux 后端直接沿用本项目已有的窗口级语义即可，不必引入第二套坐标系。

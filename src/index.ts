@@ -34,9 +34,16 @@ async function main(): Promise<void> {
       const client = new HelperClient();
       const pong = await client.call<{ pong: boolean; dpiAware: number }>("ping", {});
       const windows = await client.call<{ count: number }>("list_windows", { detail: false });
+      const transport = client.activeTransport ?? "unknown";
       await client.close();
       process.stdout.write(
-        `helper: ${helperPath}\nping: ok (dpi awareness = ${pong.dpiAware})\ntargetable windows: ${windows.count}\n`,
+        [
+          `platform: ${process.platform}`,
+          `helper: ${helperPath}`,
+          `transport: ${transport}`,
+          `ping: ok (dpi awareness = ${pong.dpiAware})`,
+          `targetable windows: ${windows.count}`,
+        ].join("\n") + "\n",
       );
       return;
     } catch (error) {

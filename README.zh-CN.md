@@ -76,7 +76,19 @@ Codex 的 computer use 之所以比"截图 + 猜坐标"可靠得多，关键在�
 
 ## 安装
 
-### 前置要求
+### 平台支持
+
+| 平台 | 状态 | 原生技术栈 |
+|---|---|---|
+| **Windows** | 已实现 | UI Automation + SendInput + PrintWindow/GDI |
+| macOS | 计划中 | AXUIElement + CGEvent + ScreenCaptureKit |
+| Linux | 计划中 | AT-SPI + XTest/uinput |
+
+MCP 层与全部工具定义都是平台无关的：新增平台只需在 `native/<平台>/bin/` 下提供一个
+能讲同一套 NDJSON 协议的可执行文件，**不需要改动 `src/` 下任何代码**。
+详见[架构文档第 11 节](docs/architecture.md#11-跨平台扩展)。
+
+### 前置要求（Windows 后端）
 
 | 组件 | 要求 | 说明 |
 |---|---|---|

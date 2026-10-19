@@ -78,7 +78,20 @@ Why two processes:
 
 ## Install
 
-### Requirements
+### Platform support
+
+| Platform | Status | Native stack |
+|---|---|---|
+| **Windows** | Implemented | UI Automation + SendInput + PrintWindow/GDI |
+| macOS | Planned | AXUIElement + CGEvent + ScreenCaptureKit |
+| Linux | Planned | AT-SPI + XTest/uinput |
+
+The MCP layer and all tool definitions are platform-agnostic: a backend only has to ship an
+executable under `native/<platform>/bin/` that speaks the same NDJSON protocol.
+Adding one requires no changes to `src/`. See
+[architecture.md § 11](docs/architecture.md#11-跨平台扩展).
+
+### Requirements (Windows backend)
 
 | Component | Version | Notes |
 |---|---|---|
