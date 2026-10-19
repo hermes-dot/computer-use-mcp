@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * codex-computer-use-mcp 入口。
+ * computer-use-mcp 入口。
  *
  * 架构：本进程是 MCP server（stdio），把工具调用转成 NDJSON 请求发给
  * 长驻的原生 helper（cu-helper.exe），由 helper 执行 UI Automation / SendInput / 截图。

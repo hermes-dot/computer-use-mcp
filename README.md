@@ -1,6 +1,6 @@
 <div align="center">
 
-# codex-computer-use-mcp
+# computer-use-mcp
 
 **Let AI drive Windows desktop apps — UI Automation accessibility trees + SendInput + window capture**
 
@@ -91,7 +91,7 @@ Why two processes:
 
 ```powershell
 git clone <this-repo>
-cd codex-computer-use-mcp
+cd computer-use-mcp
 
 npm install
 npm run build          # TypeScript -> dist/
@@ -121,7 +121,7 @@ DSH reads MCP servers from the cordis profile patch layer. Append this to
         transport: stdio
         command: 'node'
         args:
-          - 'C:\path\to\codex-computer-use-mcp\dist\index.js'
+          - 'C:\path\to\computer-use-mcp\dist\index.js'
         env:
           CU_HELPER_CACHE_DIR: 'C:\path\to\cache\computer-use'
         toolCallTimeoutMs: 60000
@@ -145,7 +145,7 @@ Notes:
   "mcpServers": {
     "computer-use": {
       "command": "node",
-      "args": ["C:\\path\\to\\codex-computer-use-mcp\\dist\\index.js"],
+      "args": ["C:\\path\\to\\computer-use-mcp\\dist\\index.js"],
       "env": { "CU_HELPER_CACHE_DIR": "C:\\path\\to\\cache\\computer-use" }
     }
   }

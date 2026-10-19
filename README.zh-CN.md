@@ -1,6 +1,6 @@
 <div align="center">
 
-# codex-computer-use-mcp
+# computer-use-mcp
 
 **让 AI 直接操作 Windows 桌面应用 —— 基于 UI Automation 无障碍树 + SendInput + 窗口截图**
 
@@ -89,7 +89,7 @@ Codex 的 computer use 之所以比"截图 + 猜坐标"可靠得多，关键在�
 
 ```powershell
 git clone <this-repo>
-cd codex-computer-use-mcp
+cd computer-use-mcp
 
 npm install          # 安装 MCP SDK 与 TypeScript
 npm run build        # 编译 TypeScript -> dist/
@@ -119,7 +119,7 @@ DSH 通过 cordis profile 的补丁层配置 MCP server。把下面这段**追�
         transport: stdio
         command: 'node'
         args:
-          - 'C:\path\to\codex-computer-use-mcp\dist\index.js'
+          - 'C:\path\to\computer-use-mcp\dist\index.js'
         env:
           # 截图落盘目录；省略时用 %LOCALAPPDATA%\cu-helper
           CU_HELPER_CACHE_DIR: 'C:\path\to\cache\computer-use'
@@ -143,7 +143,7 @@ DSH 通过 cordis profile 的补丁层配置 MCP server。把下面这段**追�
   "mcpServers": {
     "computer-use": {
       "command": "node",
-      "args": ["C:\\path\\to\\codex-computer-use-mcp\\dist\\index.js"],
+      "args": ["C:\\path\\to\\computer-use-mcp\\dist\\index.js"],
       "env": {
         "CU_HELPER_CACHE_DIR": "C:\\path\\to\\cache\\computer-use"
       }
