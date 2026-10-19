@@ -1,0 +1,17 @@
+# 依赖与构建产物
+node_modules/
+dist/
+native/windows/bin/
+
+# 本地缓存与临时文件
+.tmp/
+*.log
+
+# 编辑器
+.vscode/
+.idea/
+*.user
+*.suo
+
+# 测试产物
+tests/fixture/bin/

@@ -1,0 +1,48 @@
+{
+  "name": "codex-computer-use-mcp",
+  "version": "0.1.0",
+  "description": "Computer-use MCP server for Windows: drive GUI apps through UI Automation, SendInput and window capture — a clean-room reimplementation of the Codex computer-use tool surface.",
+  "type": "module",
+  "license": "MIT",
+  "engines": {
+    "node": ">=18"
+  },
+  "bin": {
+    "codex-computer-use-mcp": "dist/index.js"
+  },
+  "main": "dist/index.js",
+  "files": [
+    "dist",
+    "native/windows/*.cs",
+    "native/windows/build.ps1",
+    "README.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "build:native": "pwsh -File native/windows/build.ps1",
+    "build:all": "npm run build && npm run build:native",
+    "test": "npm run test:mcp && npm run test:live && npm run test:e2e",
+    "test:mcp": "node tests/mcp.test.mjs",
+    "test:live": "node tests/mcp-live.mjs",
+    "test:e2e": "pwsh -File tests/e2e.ps1",
+    "typecheck": "tsc -p tsconfig.json --noEmit"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.32.1",
+    "zod": "^3.25.76"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.0",
+    "typescript": "^5.7.2"
+  },
+  "keywords": [
+    "mcp",
+    "computer-use",
+    "ui-automation",
+    "windows",
+    "gui-automation",
+    "model-context-protocol",
+    "codex"
+  ]
+}

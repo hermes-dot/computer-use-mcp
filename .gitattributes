@@ -1,0 +1,15 @@
+# 统一行尾：源码用 LF，Windows 脚本用 CRLF
+* text=auto eol=lf
+*.ps1 text eol=crlf
+*.cmd text eol=crlf
+*.bat text eol=crlf
+
+# 二进制
+*.exe binary
+*.dll binary
+*.jpg binary
+*.png binary
+
+# 语言统计：文档不计入代码占比
+*.md linguist-documentation
+docs/** linguist-documentation
